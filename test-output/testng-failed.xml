@@ -5,7 +5,7 @@
     <classes>
       <class name="homepage.MyTest">
         <methods>
-          <include name="RandomlyChangeSearchForHotels"/>
+          <include name="CheckThePageFullyLoaded"/>
           <include name="mySetUp"/>
         </methods>
       </class> <!-- homepage.MyTest -->

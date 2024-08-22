@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Random;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -84,6 +86,7 @@ public class MyTest {
 	public void CheckDepatureAndReturnDate() {
 		// static LocalDate now() -- LocalDate : It is used to obtain the current date
 		// from the system clock in the default time-zone.
+		
 		LocalDate todayDate = LocalDate.now();
 
 		System.out.println(todayDate.getDayOfWeek()); // The function returns the day of the week and not null.
@@ -131,9 +134,68 @@ public class MyTest {
 		} else if (driver.getCurrentUrl().contains("ar")) {
 			int RandomIndex = rand.nextInt(ArabicCities.length);
 			hotelSearch.sendKeys(ArabicCities[RandomIndex]);
-
+		
 		}
-
+        // hotelSearch.sendKeys(Keys.ARROW_DOWN,Keys.ARROW_DOWN,Keys.ENTER);
+		
+		WebElement ListOfLocation = driver.findElement(By.cssSelector(".sc-phbroq-4.gGwzVo.AutoComplete__List"));
+		WebElement firstResult= ListOfLocation.findElements(By.tagName("li")).get(1);
+		firstResult.click();
+		
+		
 	}
+	
+	@Test(priority = 9)
+	public void RandomlySelectTheNumberOfVistor() {
+		
+		WebElement selectorOfTheVistor = driver.findElement(By.xpath("// select [@data-testid='HotelSearchBox__ReservationSelect_Select']"));
+		Select select = new  Select(selectorOfTheVistor);
+		//select.selectByIndex(1);
+		//select.selectByValue("B");
+		//select.selectByVisibleText("1 Room, 1 Adult, 0 Children");
+		int randomIndex =rand.nextInt(2);
+		select.selectByIndex(randomIndex);
+		WebElement searchButton = driver.findElement(By.xpath("//button[@data-testid='HotelSearchBox__SearchButton']"));
+		searchButton.click();
+	}
+	
+	@Test(priority = 10)
+	public void CheckThePageFullyLoaded() throws InterruptedException {
+		boolean expectedResult=true ;
+	     Thread.sleep(10000);
+		String results = driver.findElement(By.xpath("//span[@data-testid='HotelSearchResult__resultsFoundCount']")).getText();
+	     boolean finished = results.contains("وجدنا") || results.contains("found"); 
+		Assert.assertEquals(finished, expectedResult);
+		
+	}
+	
+	@Test(priority = 11)
+	public void SortItemsLowestToHighestPrice() {
+		boolean expectedResults=true;
+		
+		WebElement lowestPriceButton =driver.findElement(By.xpath("//button[@data-testid='HotelSearchResult__sort__LOWEST_PRICE']"));
+		lowestPriceButton.click();
+		WebElement pricesContainer= driver.findElement(By.cssSelector(".sc-htpNat.KtFsv.col-9"));
+		List<WebElement> allPrices =pricesContainer.findElements(By.className("Price__Value"));
+	String lowestPrice= allPrices.get(0).getText();
+	String highestPrice= allPrices.get(allPrices.size()-1).getText();
+	System.out.println(lowestPrice);
+	System.out.println(highestPrice);
+	
+		int lowestPriceAsInt = Integer.parseInt(lowestPrice);
+		int highestPriceAsInt=Integer.parseInt(highestPrice);
+		
+		boolean ActualResults=lowestPriceAsInt< highestPriceAsInt;
+		Assert.assertEquals(ActualResults, expectedResults);
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
